@@ -64,34 +64,56 @@ def getRecipe(links):
                 tree = html.fromstring(site.content)
 
                 namePath = "/html/body/main/article[1]/div/div[2]/h1/text()"
-                ingredPath = "/html/body/main/article[2]/table/tbody/tr/td/span/text()" # TODO: fix this
+                ingredPath = "/html/body/main/article[2]/table/tbody/tr/td" # TODO: fix this
                 recipPath = "/html/body/main/article[3]/div[1]/text()"
 
                 name = tree.xpath(namePath)[0]
                 ingred = tree.xpath(ingredPath)
                 resip = tree.xpath(recipPath)
+
                 resString = ""
                 for x in resip:
-                    resString += x + "\n\n"
+                    resString += x + "\n"
 
-                ingredDict = dict()
+                ingredDict = {}
                 for i in range(0, len(ingred)-1, 2):
-                    ingredDict[ingred[i+1]] = ingred[i] 
-                recs[name] = [resString, ingredDict]
+                    #print(ingred[i+1][0].text)
+                    if ingred[i+1][0].text is not None:
+                        if ingred[i+1][0].text is None:
+                            stuff = ingred[i+1][0][0].text.strip().replace("  ", "")
+                        else:
+                            stuff = ingred[i+1][0].text.strip().replace("  ", "")
+                    else:
+                        stuff = ""
 
+                    if ingred[i][0].text is not None:
+                        if ingred[i][0].text is None:
+                            amount = ingred[i][0][0].text.strip().replace("  ", "")
+                        else:
+                            amount = ingred[i][0].text.strip().replace("  ", "")
+                    else:
+                        amount = ""
+                    ingredDict[stuff] = amount
+                recs[name] = [resString, ingredDict]
                 print("")
             except Exception as e:
                 print(e)
-                sleep(10)
-
+                
+            print(link)
             sleep(random.randint(0, 5))
+    return recs
 
 #links = getLinks()
 #with open('./data/links.json', 'w') as file:
 #    jsonString = json.dumps(links)
 #    file.write(jsonString)
+links = ""
 with open('./data/links.json') as file:
     links = json.load(file)
     
-    getRecipe(links)
 
+recs = getRecipe(links)
+
+with open('./data/recs.json', 'w') as file:
+    jsonString = json.dumps(recs)
+    file.write(jsonString)
