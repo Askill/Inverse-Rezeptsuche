@@ -1,10 +1,11 @@
-
+# -*- coding: utf-8 -*-
 from urllib.parse import urljoin
 from lxml import html
 import requests
 import json
 from time import sleep
 import random
+import traceback
 
 header_values = {
     'name': 'Michael Foord',
@@ -58,7 +59,9 @@ def getLinks():
 def getRecipe(links):
     recs = dict()
     with requests.Session() as session:
-        for link in links:
+        counter = 0
+        for link in links[:1]:
+            counter += 1
             try:
                 site = session.get(link,  headers=header_values)
                 tree = html.fromstring(site.content)
@@ -78,28 +81,27 @@ def getRecipe(links):
                 ingredDict = {}
                 for i in range(0, len(ingred)-1, 2):
                     #print(ingred[i+1][0].text)
-                    if ingred[i+1][0].text is not None:
+                    if ingred[i+1][0] is not None:
                         if ingred[i+1][0].text is None:
-                            stuff = ingred[i+1][0][0].text.strip().replace("  ", "")
+                            textFromLink = ingred[i+1][0][0].text.strip().replace("  ", "")
+                            #print(textFromLink)
+                            stuff = textFromLink
                         else:
                             stuff = ingred[i+1][0].text.strip().replace("  ", "")
-                    else:
-                        stuff = ""
 
-                    if ingred[i][0].text is not None:
-                        if ingred[i][0].text is None:
-                            amount = ingred[i][0][0].text.strip().replace("  ", "")
-                        else:
+                    if ingred[i] is not None:
+                        try:
                             amount = ingred[i][0].text.strip().replace("  ", "")
-                    else:
-                        amount = ""
+                        except:
+                            amount = ""
+                    #print(stuff, amount)
                     ingredDict[stuff] = amount
-                recs[name] = [resString, ingredDict]
+                recs[name] = [resString, ingredDict, link]
                 print("")
             except Exception as e:
-                print(e)
+                print(traceback.format_exc())
                 
-            print(link)
+            print(format(counter/100, '.2f'), link)
             sleep(random.randint(0, 5))
     return recs
 
@@ -114,6 +116,6 @@ with open('./data/links.json') as file:
 
 recs = getRecipe(links)
 
-with open('./data/recs.json', 'w') as file:
-    jsonString = json.dumps(recs)
-    file.write(jsonString)
+with open('./data/recs.json', 'w', encoding="utf-8") as file:
+    json.dump(recs, file, ensure_ascii=False)
+    
