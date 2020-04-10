@@ -2,7 +2,7 @@
 from application.db import Session, Recipe, Ingredient, Link
 
 dbSession = Session()
-inputArr = ["wasser", "MEHL", "zucker", "zitrone", "stift"] 
+inputArr = ["kartoffeln", "zwiebel", "steak", "würfel"] 
 
 def slow():
     recipes = dbSession.query(Recipe).all()
@@ -12,6 +12,8 @@ def slow():
     for recipe in recipes:
         rec = recipe
         recipe = recipe.ingredients()
+        if len(recipe) > len(inputArr) + 2:
+            continue
         counter = 0
         for i in inputArr:
             for x in recipe:
@@ -27,21 +29,22 @@ def slow():
         #print(rec.name)
         
 
-    print(arr['5'])
+    print(arr)
 
 def faster():
     indx = {}
     for inpu in inputArr:
         ids = [] 
         for x in dbSession.query(Ingredient).filter(Ingredient.name.contains(inpu)).all():
-            for y in x.recipe:
-                ids.append(y.recipe_id)
-        
-        for i in ids:
-            if str(i) not in indx:
-                indx[str(i)] = 0
 
-            indx[str(i)] += 1
+            for y in x.recipe:
+                
+                if dbSession.query(Link).filter(Link.recipe_id==y.recipe_id).count() > len(inputArr) + 5:
+                    continue   
+                if str(y.recipe_id) not in indx:
+                    indx[str(y.recipe_id)] = 0
+
+                indx[str(y.recipe_id)] += 1
         
 
     for key, value in indx.items():
@@ -51,3 +54,4 @@ def faster():
             print(dbSession.query(Recipe).filter(Recipe.recipe_id==key).first().ingredients())
             #print(key)
 faster()    
+slow()
