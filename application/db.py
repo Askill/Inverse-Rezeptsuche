@@ -61,8 +61,7 @@ class Recipe(Base):
             "instructions":self.instructions,
             "url": self.url,
             "img": img,
-            "ingredients": self.ingredient.ingredient
-            
+            "ingredients": self.ingredients()  
         }
         return data
 
