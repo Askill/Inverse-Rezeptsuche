@@ -6,6 +6,9 @@ import json
 from time import sleep
 import random
 import traceback
+import cv2
+import base64
+from application.db import Session, Recipe, Ingredient, Link
 
 header_values = {
     'name': 'Michael Foord',
@@ -60,7 +63,7 @@ def getRecipe(links):
     recs = dict()
     with requests.Session() as session:
         counter = 0
-        for link in links[:1]:
+        for link in links:
             counter += 1
             try:
                 site = session.get(link,  headers=header_values)
@@ -69,15 +72,24 @@ def getRecipe(links):
                 namePath = "/html/body/main/article[1]/div/div[2]/h1/text()"
                 ingredPath = "/html/body/main/article[2]/table/tbody/tr/td" # TODO: fix this
                 recipPath = "/html/body/main/article[3]/div[1]/text()"
+                imgPath = './data/images.jpeg'
 
                 name = tree.xpath(namePath)[0]
                 ingred = tree.xpath(ingredPath)
                 resip = tree.xpath(recipPath)
 
+                image = cv2.imread(imgPath)
+                ret, jpeg = cv2.imencode(".jpeg", image)
+                img = base64.b64encode(jpeg)
+
                 resString = ""
                 for x in resip:
-                    resString += x + "\n"
+                    resString += x 
 
+                dbSession = Session()
+                
+                r = Recipe(name=name, instructions=resString, url=link, img=img)
+                
                 ingredDict = {}
                 for i in range(0, len(ingred)-1, 2):
                     #print(ingred[i+1][0].text)
@@ -95,13 +107,19 @@ def getRecipe(links):
                         except:
                             amount = ""
                     #print(stuff, amount)
+                    a = Link(ingredient_amount=amount)
+                    a.ingredient = Ingredient(name=stuff)
+                    r.ingredient.append(a)
+                    dbSession.add(r)
+                    dbSession.commit()
+                    
                     ingredDict[stuff] = amount
-                recs[name] = [resString, ingredDict, link]
+                recs[name] = [resString, ingredDict, link, img.decode("utf-8")]
                 print("")
             except Exception as e:
                 print(traceback.format_exc())
                 
-            print(format(counter/100, '.2f'), link)
+            print(format(counter/len(links), '.2f'), link)
             sleep(random.randint(0, 5))
     return recs
 
