@@ -8,7 +8,7 @@ import random
 import traceback
 import cv2
 import base64
-from application.db import Session, Recipe, Ingredient, Link
+from application.db import Session, Recipe, Ingredient, Link, Trunk
 
 header_values = {
     'name': 'Michael Foord',

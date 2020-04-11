@@ -1,5 +1,7 @@
 
-from application.db import Session, Recipe, Ingredient, Link
+from application.db import Session, Recipe, Ingredient, Link, Trunk
+import nltk as nltk
+from nltk.corpus import stopwords
 
 dbSession = Session()
 inputArr = ["kartoffeln", "zwiebel", "steak", "würfel"] 
@@ -49,9 +51,26 @@ def faster():
 
     for key, value in indx.items():
         if value >= len(inputArr):
-
-
             print(dbSession.query(Recipe).filter(Recipe.recipe_id==key).first().ingredients())
             #print(key)
-faster()    
-slow()
+
+#
+
+def stemIngred():
+    stopset = set(stopwords.words('german'))
+    stopset |= set("(),")
+
+    count = dbSession.query(Ingredient).count()
+    for x in dbSession.query(Ingredient).all():
+        snowball = nltk.SnowballStemmer(language='german')
+        for token in nltk.word_tokenize(x.name): 
+            if token in stopset or len(token) < 3:
+                continue
+            stemmed = snowball.stem(token)
+
+            x.trunks.append(Trunk(name=stemmed))
+            dbSession.commit()
+        print(x.ingredient_id/count)
+#faster()    
+#slow()
+print(dbSession.query(Trunk.name).all())

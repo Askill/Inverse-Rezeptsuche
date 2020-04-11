@@ -67,9 +67,16 @@ class Recipe(Base):
 
 class Ingredient(Base):
     __tablename__ = "ingredient"
-    ingredient_id = Column('ingredient_id', Integer,  primary_key=True)
+    ingredient_id = Column('ingredient_id', Integer,  primary_key=True, autoincrement=True)
     name = Column('name', Text)
     recipe = relationship("Link", back_populates="ingredient")
+    trunks = relationship("Trunk")
+
+class Trunk(Base):
+    __tablename__ = "trunk"
+    trunk_id = Column('trunk_id', Integer,  primary_key=True, autoincrement=True)
+    name = Column('name', Text)
+    ingredient_id = Column(Integer, ForeignKey('ingredient.ingredient_id'))
 
 
 Base.metadata.create_all(engine)
