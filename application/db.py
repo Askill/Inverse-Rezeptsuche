@@ -13,18 +13,7 @@ Base = declarative_base()
 Session = sessionmaker(bind=engine)
 
 # https://docs.sqlalchemy.org/en/13/orm/basic_relationships.html#association-object
-class Link(Base):
-    __tablename__ = 'link'
-    recipe_id = Column(Integer, ForeignKey('recipe.recipe_id'), primary_key=True)
-    ingredient_id = Column(Integer, ForeignKey('ingredient.ingredient_id'), primary_key=True)
-    ingredient_amount = Column('ingredient_amount', Text)
-    ingredient_amount_mu = Column('ingredient_amount_mu', Text)    # measurement unit
 
-    recipe = relationship("Recipe", back_populates="ingredient")
-    ingredient = relationship("Ingredient", back_populates="recipe")
-
-    def ingredients(self):
-        return self.ingredient.name
 
 class Recipe(Base):
     __tablename__ = "recipe"
@@ -33,7 +22,8 @@ class Recipe(Base):
     instructions = Column('instructions', Text)
     url = Column('url', Text)
     img = Column('img', LargeBinary)
-    ingredient = relationship("Link", back_populates="recipe")
+    ingredient = relationship("Ingredient", backref="recipe")
+    trunk = relationship("Trunk", backref="recipe")
 
     def ingredients(self):
         l = []
@@ -69,14 +59,18 @@ class Ingredient(Base):
     __tablename__ = "ingredient"
     ingredient_id = Column('ingredient_id', Integer,  primary_key=True, autoincrement=True)
     name = Column('name', Text)
-    recipe = relationship("Link", back_populates="ingredient")
-    trunks = relationship("Trunk")
+    ingredient_amount = Column('ingredient_amount', Text)
+    ingredient_amount_mu = Column('ingredient_amount_mu', Text)    # measurement unit
+
+    recipe_id = Column(Integer, ForeignKey('recipe.recipe_id'))
+    
 
 class Trunk(Base):
     __tablename__ = "trunk"
     trunk_id = Column('trunk_id', Integer,  primary_key=True, autoincrement=True)
     name = Column('name', Text)
-    ingredient_id = Column(Integer, ForeignKey('ingredient.ingredient_id'))
+
+    recipe_id = Column(Integer, ForeignKey('recipe.recipe_id'))
 
 
 Base.metadata.create_all(engine)

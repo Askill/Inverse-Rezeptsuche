@@ -1,7 +1,21 @@
 import json
 import cv2
 import base64
-from application.db import Session, Recipe, Ingredient, Link, Trunk
+import nltk as nltk
+from nltk.corpus import stopwords
+from application.db import Session, Recipe, Ingredient, Trunk
+
+def stemWord(word):
+    arr = []
+    stopset = set(stopwords.words('german'))
+    stopset |= set("(),")
+    snowball = nltk.SnowballStemmer(language='german')
+    for token in nltk.word_tokenize(word): 
+        if token in stopset or len(token) < 4:
+            continue
+        stemmed = snowball.stem(token)
+        arr.append(stemmed)
+    return arr
 
 def migrate(path):
     recs = ""
@@ -9,6 +23,8 @@ def migrate(path):
         recs = json.load(file)
     
     dbSession = Session()
+    counter = 0
+    leng = len(recs)
     for key, value in recs.items():
         name=key
         resString=value[0]
@@ -16,11 +32,16 @@ def migrate(path):
         img=value[3].encode()
 
         r = Recipe(name=name, instructions=resString, url=link, img=img)
+
         for x, y in value[1].items():
-            a = Link(ingredient_amount=y)
-            a.ingredient = Ingredient(name=x)
+            a = Ingredient(name=x, ingredient_amount=y)
             r.ingredient.append(a)
+            for x in stemWord(a.name):
+                t = Trunk(name=x)
+                r.trunk.append(t)
         dbSession.add(r)
         dbSession.commit()
+        counter+=1
+        print(counter/leng)
 
 migrate('./data/recs.json')

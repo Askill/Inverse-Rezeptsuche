@@ -8,7 +8,7 @@ import random
 import traceback
 import cv2
 import base64
-from application.db import Session, Recipe, Ingredient, Link, Trunk
+from application.db import Session, Recipe, Ingredient, Trunk
 import nltk as nltk
 from nltk.corpus import stopwords
 
@@ -126,6 +126,8 @@ def getRecipe(links):
             sleep(random.randint(0, 5))
     return recs
 
+
+
 def stemIngred():
     dbSession = Session()
     stopset = set(stopwords.words('german'))
@@ -135,7 +137,7 @@ def stemIngred():
     for x in dbSession.query(Ingredient).all():
         snowball = nltk.SnowballStemmer(language='german')
         for token in nltk.word_tokenize(x.name): 
-            if token in stopset or len(token) < 3:
+            if token in stopset or len(token) < 4:
                 continue
             stemmed = snowball.stem(token)
 
@@ -153,7 +155,7 @@ with open('./data/links.json') as file:
     
 
 #recs = getRecipe(links)
-stemIngred()
+#stemIngred()
 
 #with open('./data/recs.json', 'w', encoding="utf-8") as file:
 #    json.dump(recs, file, ensure_ascii=False)
