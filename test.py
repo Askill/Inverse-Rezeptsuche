@@ -5,7 +5,8 @@ from nltk.corpus import stopwords
 import time
 
 dbSession = Session()
-inputArr = ["butter", "milch", "eier", "mehl", "zucker"] 
+inputArr = ["butter", "milch", "eier", "mehl", "zucker"]
+inputArr += ["Wasser", "salz", "pfeffer"] # it is assumed that everyone has this
 maxMissing = 10
 
 def slow():
@@ -85,7 +86,7 @@ def printDict(indx):
         outDict[calcOverlay(inputArr, ingred)] = (dbSession.query(Recipe).filter(Recipe.recipe_id==key).first().name, key, dbSession.query(Ingredient.name).filter(Ingredient.recipe_id==key).all())
     
     for key, value in outDict.items():
-        if key >= 0.5:
+        if key >= 0.7:
             print(key, value)
     
 
@@ -104,13 +105,8 @@ def calcOverlay(l1, l2):
                 counter +=1
     counter = counter / len(l2)                 
     return counter
-#
 
 
-start = time.time()
-#slow()
-end = time.time()
-print("\n", end - start, "\n")  
 
 stemmed = stemInput(inputArr)
 
