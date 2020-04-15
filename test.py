@@ -2,9 +2,11 @@
 from application.db import Session, Recipe, Ingredient, Link, Trunk
 import nltk as nltk
 from nltk.corpus import stopwords
+import time
 
 dbSession = Session()
-inputArr = ["kartoffeln", "zwiebel", "steak", "würfel"] 
+inputArr = ["butter", "milch", "eier", "käse"] 
+maxMissing = 4
 
 def slow():
     recipes = dbSession.query(Recipe).all()
@@ -14,7 +16,7 @@ def slow():
     for recipe in recipes:
         rec = recipe
         recipe = recipe.ingredients()
-        if len(recipe) > len(inputArr) + 2:
+        if len(recipe) > len(inputArr) + maxMissing:
             continue
         counter = 0
         for i in inputArr:
@@ -27,11 +29,12 @@ def slow():
         if counter not in arr:
             arr[counter] = []
             
-            arr[counter].append(rec.ingredients())
+        arr[counter].append(rec.ingredients())
         #print(rec.name)
         
-
-    print(arr)
+#    for y, x in arr.items():
+#        for xx in x:
+#            print(xx)
 
 def faster():
     indx = {}
@@ -41,7 +44,7 @@ def faster():
 
             for y in x.recipe:
                 
-                if dbSession.query(Link).filter(Link.recipe_id==y.recipe_id).count() > len(inputArr) + 5:
+                if dbSession.query(Link).filter(Link.recipe_id==y.recipe_id).count() > len(inputArr) + maxMissing:
                     continue   
                 if str(y.recipe_id) not in indx:
                     indx[str(y.recipe_id)] = 0
@@ -49,28 +52,81 @@ def faster():
                 indx[str(y.recipe_id)] += 1
         
 
+    outDict = {}
     for key, value in indx.items():
-        if value >= len(inputArr):
-            print(dbSession.query(Recipe).filter(Recipe.recipe_id==key).first().ingredients())
-            #print(key)
+        ingred = dbSession.query(Recipe).filter(Recipe.recipe_id==key).first().ingredients()
+        outDict[calcOverlay(inputArr, ingred)] = (dbSession.query(Recipe).filter(Recipe.recipe_id==key).first().name, key, ingred)
+    
+    print(outDict)
 
+
+def fastes():
+    indx = {}
+    inputArr2 = []
+
+    snowball = nltk.SnowballStemmer(language='german')
+    stopset = set(stopwords.words('german'))
+    for word in inputArr:
+
+        if word in stopset:
+             continue
+        inputArr2.append(snowball.stem(word))
+
+    for inpu in inputArr2:
+        ids = [] 
+        for xx in dbSession.query(Trunk).filter(Trunk.name == inpu).all():
+            for x in dbSession.query(Ingredient).filter(xx.ingredient_id == Ingredient.ingredient_id).all():
+                for y in x.recipe:
+                    
+                    if dbSession.query(Link).filter(Link.recipe_id==y.recipe_id).count() > len(inputArr) + maxMissing:
+                        continue   
+                    if str(y.recipe_id) not in indx:
+                        indx[str(y.recipe_id)] = 0
+
+                    indx[str(y.recipe_id)] += 1
+        
+    outDict = {}
+    for key, value in indx.items():
+        ingred = dbSession.query(Recipe).filter(Recipe.recipe_id==key).first().ingredients()
+        outDict[calcOverlay(inputArr, ingred)] = (dbSession.query(Recipe).filter(Recipe.recipe_id==key).first().name, key, ingred)
+    
+    print(outDict)
 #
 
-def stemIngred():
+def calcOverlay(l1, l2):
+    snowball = nltk.SnowballStemmer(language='german')
     stopset = set(stopwords.words('german'))
     stopset |= set("(),")
 
-    count = dbSession.query(Ingredient).count()
-    for x in dbSession.query(Ingredient).all():
-        snowball = nltk.SnowballStemmer(language='german')
-        for token in nltk.word_tokenize(x.name): 
-            if token in stopset or len(token) < 3:
+    l1 =  [snowball.stem(l) for l in l1 ]
+    counter = 0
+
+    for x in l2:
+        for token in nltk.word_tokenize(x): 
+            if token in stopset:
                 continue
             stemmed = snowball.stem(token)
+            for l in l1:
+                if l == stemmed:
+                    counter +=1
+                     
+    return counter
+#
 
-            x.trunks.append(Trunk(name=stemmed))
-            dbSession.commit()
-        print(x.ingredient_id/count)
-#faster()    
-#slow()
-print(dbSession.query(Trunk.name).all())
+
+start = time.time()
+slow()
+end = time.time()
+print("\n", end - start, "\n")  
+
+
+start = time.time()
+faster()  
+end = time.time()
+print("\n", end - start, "\n")  
+
+
+start = time.time()
+fastes()
+end = time.time()
+print("\n", end - start, "\n")  
