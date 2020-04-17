@@ -11,7 +11,7 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 api = Api(app, version='1', contact={"name":""}, license={"name":"Online Dienst Dokumentation"}, api_spec_url='/api/swagger')
 
-api.add_resource(endpoints.Recipe,'/api/v1/recipe/')
+api.add_resource(endpoints.RecipeList,'/api/v1/recipe/')
 
 @app.route("/")
 def index():

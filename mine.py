@@ -34,8 +34,8 @@ def getLinks():
         # converts: 344.621 Ergebnisse to int(344621)
         #max = int(tree.xpath(
         #    '/html/body/main/div[1]/h1/span/text()')[0].split(" ")[0].replace(".", ""))
-        max = 2000 # get 2000 recepies :)
-        for i in range(0, max, 30):
+        max = 10000 # get 2000 recepies :)
+        for i in range(2000, max, 30):
             try:
                 root = "https://www.chefkoch.de/rs/s" + \
                     str(i) + "/Rezepte.html"
@@ -57,7 +57,7 @@ def getLinks():
                 i -= 30
                 sleep(10)
 
-            sleep(random.randint(0, 5))
+            sleep(random.randint(1, 4))
 
         print(links)
     return links
@@ -110,20 +110,21 @@ def getRecipe(links):
                         except:
                             amount = ""
                     #print(stuff, amount)
-                    a = Link(ingredient_amount=amount)
-                    a.ingredient = Ingredient(name=stuff)
-                    r.ingredient.append(a)
-                    dbSession.add(r)
-                    dbSession.commit()
+                    #a = Link(ingredient_amount=amount)
+                    #a.ingredient = Ingredient(name=stuff)
+                    #r.ingredient.append(a)
+                    #dbSession.add(r)
+                    #dbSession.commit()
                     
                     ingredDict[stuff] = amount
                 recs[name] = [resString, ingredDict, link, img.decode("utf-8")]
-                print("")
+                if counter % 20 == 0:
+                    print(counter)
             except Exception as e:
                 print(traceback.format_exc())
                 
             print(format(counter/len(links), '.2f'), link)
-            sleep(random.randint(0, 5))
+            sleep(random.randint(0, 6))
     return recs
 
 
@@ -149,9 +150,9 @@ def stemIngred():
 #with open('./data/links.json', 'w') as file:
 #    jsonString = json.dumps(links)
 #    file.write(jsonString)
-links = ""
-with open('./data/links.json') as file:
-    links = json.load(file)
+#links = ""
+#with open('./data/links.json') as file:
+#    links = json.load(file)
     
 
 #recs = getRecipe(links)

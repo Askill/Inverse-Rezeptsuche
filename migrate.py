@@ -44,4 +44,4 @@ def migrate(path):
         counter+=1
         print(counter/leng)
 
-migrate('./data/recs.json')
+#migrate('./data/recs.json')
