@@ -2,13 +2,15 @@
 
 #main{
     width: 65rem;
-    height: 38rem;
+    height: 45rem;
     position: relative;
     top: 10rem;
     left: -50%;
     display: block;
-   padding: 0;
-   background-color: transparent !important;
+    padding: 0;
+    background-color: transparent !important;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 
@@ -31,4 +33,32 @@
 #nav-button{
     float: right;
     width: 12%;
+}
+
+.disable-scrollbars::-webkit-scrollbar {
+    width: 0px;
+    background: transparent; /* Chrome/Safari/Webkit */
+}
+
+.disable-scrollbars {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE 10+ */
+}
+
+.recipe-img{
+    width:100%;
+    
+}
+.recipe-name{
+
+}
+.recipe-instructions{
+    display: grid;
+    width:70%;
+}
+.recipe-score{
+    
+}
+.recipe-container{
+    padding:0;
 }

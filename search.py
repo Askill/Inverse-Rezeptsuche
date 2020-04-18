@@ -61,7 +61,7 @@ def getRecDict(indx, inputArr):
     for key in heapq.nlargest(10, outDict.keys()):
         key2 = outDict[key]
         rec = dbSession.query(Recipe).filter(Recipe.recipe_id==key2).first()
-        outDict2[key] = (key2, rec.name, rec.instructions, rec.url,  [r[0] for r in dbSession.query(Ingredient.name).filter(Ingredient.recipe_id==key2).all()])
+        outDict2[key] = (key2, rec.name, rec.url,  [r[0] + ": " + r[1] for r in dbSession.query(Ingredient.name, Ingredient.ingredient_amount).filter(Ingredient.recipe_id==key2).all()])
     return outDict2
 
 def printDict(indx, inputArr):

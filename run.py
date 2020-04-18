@@ -1,5 +1,5 @@
 from application import app
 
-app.run(host="localhost", port='5001', debug=True, threaded=True)
+app.run(host="0.0.0.0", port='5001', debug=True, threaded=True)
 
 
