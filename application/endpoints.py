@@ -30,7 +30,7 @@ class RecipeList(Resource):
         print("get recipes",end - start, "\n")  
 
         start = time.time()
-        recs = search.getRecDict(indx, ingreds )
+        recs = search.getRecDict(indx, ingreds)
         end = time.time()
         print("calc overlay",end - start, "\n")  
       

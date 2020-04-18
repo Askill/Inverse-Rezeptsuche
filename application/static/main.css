@@ -1,25 +1,5 @@
-#list{
-    position: absolute;
-    right: 0;
-    top:0;
-    width: 20rem;
-    min-height: 100%;   
- 
-}
 
-#switch{
-    width: 25rem;
-    height: 5rem;
-    position: relative;
-    top: 0;
-    left: -50%;
-    
-}
-.navButton{
-    padding-left: 1rem;
-    padding-right: 1rem;
-    margin-right: 0.5rem;
-}
+
 #main{
     width: 65rem;
     height: 38rem;
@@ -28,37 +8,10 @@
     left: -50%;
     display: block;
    padding: 0;
+   background-color: transparent !important;
 }
 
-.listIMG{
-    width: 5rem;
-    float: left;
-}
 
-.navi{
-    margin-left: 1.5rem;
-}
-
-.personalInfo{
-    float: right;
-    width: 9rem;
-    margin:0;
-    padding:0;
-}
-.card{
-    margin-top:1rem;
-}
-.card-text{
-    padding: 0;
-    height: 0;
-}
-
-#middle-left{
-    float: left;
-}
-#middle-right{
-    float:right;
-}
 .middle{
     padding: 2rem ;
     margin: 0 !important;
@@ -66,21 +19,16 @@
     width: 45%;
     display: block;
 }
-
-#image-left{
-    width:100%;
-  
+#nav-container{
+    display: flex;
+    justify-content: center;
+    background-color: transparent !important;
 }
-#image-right{
-    width:100%;
-
+#search-form{
+    width:25rem;
+    
 }
-
-.heroInfo{
-   
-}
-
-.middle-controls{
-    margin-left: 1rem;
-    margin-top: 1rem;
+#nav-button{
+    float: right;
+    width: 12%;
 }

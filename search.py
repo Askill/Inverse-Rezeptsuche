@@ -4,36 +4,10 @@ import nltk as nltk
 from nltk.corpus import stopwords
 import time
 import heapq
+from collections import Counter 
 
 dbSession = Session()
 
-def slow():
-    recipes = dbSession.query(Recipe).all()
-
-
-    arr = {}
-    for recipe in recipes:
-        rec = recipe
-        recipe = recipe.ingredients()
-        if len(recipe) > len(inputArr) + maxMissing:
-            continue
-        counter = 0
-        for i in inputArr:
-            for x in recipe:
-                if i in x:
-                    counter += 1
-                    continue
-        counter = str(counter)
-
-        if counter not in arr:
-            arr[counter] = []
-            
-        arr[counter].append(rec.ingredients())
-        #print(rec.name)
-        
-#    for y, x in arr.items():
-#        for xx in x:
-#            print(xx)
 
 def faster(inputArr):
     indx = {}
@@ -75,6 +49,10 @@ def stemInput(inputArr):
 def getRecDict(indx, inputArr):
     #inputArr = stem(inputArr)
     outDict = {}
+    k = Counter(indx) 
+    # Finding 1000 highest values 
+    indx = k.most_common(1000)  
+    indx = dict(indx)
     for key, value in indx.items():
         ingred = dbSession.query(Trunk.name).filter(Trunk.recipe_id==int(key)).all()
         outDict[calcOverlay(inputArr, ingred)] = int(key)
@@ -82,7 +60,8 @@ def getRecDict(indx, inputArr):
     outDict2 = {}
     for key in heapq.nlargest(10, outDict.keys()):
         key2 = outDict[key]
-        outDict2[key] = (dbSession.query(Recipe).filter(Recipe.recipe_id==key2).first().name, key2, dbSession.query(Ingredient.name).filter(Ingredient.recipe_id==key2).all())
+        rec = dbSession.query(Recipe).filter(Recipe.recipe_id==key2).first()
+        outDict2[key] = (key2, rec.name, rec.instructions, rec.url,  [r[0] for r in dbSession.query(Ingredient.name).filter(Ingredient.recipe_id==key2).all()])
     return outDict2
 
 def printDict(indx, inputArr):
