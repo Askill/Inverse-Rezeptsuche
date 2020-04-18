@@ -3,6 +3,7 @@ from application.db import Session, Recipe, Ingredient, Trunk
 import nltk as nltk
 from nltk.corpus import stopwords
 import time
+import heapq
 
 dbSession = Session()
 
@@ -72,18 +73,20 @@ def stemInput(inputArr):
 #
 
 def getRecDict(indx, inputArr):
+    #inputArr = stem(inputArr)
     outDict = {}
     for key, value in indx.items():
         ingred = dbSession.query(Trunk.name).filter(Trunk.recipe_id==int(key)).all()
-        outDict[calcOverlay(inputArr, ingred)] = (dbSession.query(Recipe).filter(Recipe.recipe_id==key).first().name, key, dbSession.query(Ingredient.name).filter(Ingredient.recipe_id==key).all())
-    return outDict
+        outDict[calcOverlay(inputArr, ingred)] = int(key)
+        
+    outDict2 = {}
+    for key in heapq.nlargest(10, outDict.keys()):
+        key2 = outDict[key]
+        outDict2[key] = (dbSession.query(Recipe).filter(Recipe.recipe_id==key2).first().name, key2, dbSession.query(Ingredient.name).filter(Ingredient.recipe_id==key2).all())
+    return outDict2
 
 def printDict(indx, inputArr):
-    outDict = {}
-    for key, value in indx.items():
-        ingred = dbSession.query(Trunk.name).filter(Trunk.recipe_id==int(key)).all()
-        outDict[calcOverlay(inputArr, ingred)] = (dbSession.query(Recipe).filter(Recipe.recipe_id==key).first().name, key, dbSession.query(Ingredient.name).filter(Ingredient.recipe_id==key).all())
-    
+    outDict = getRecDict(indx, inputArr)
     for key, value in sorted(outDict.items()):
         if key >= 0.3:
            
@@ -92,12 +95,15 @@ def printDict(indx, inputArr):
                 print("\t", xx[0])
     
 
-def calcOverlay(l1, l2):
+def stem(l1):
     snowball = nltk.SnowballStemmer(language='german')
     stopset = set(stopwords.words('german'))
     stopset |= set("(),")
 
-    l1 =  [snowball.stem(l) for l in l1 ]
+    l1 =  [snowball.stem(l) for l in l1]
+    return l1
+
+def calcOverlay(l1, l2):
     counter = 0
 
     for x in l2:
