@@ -4,11 +4,11 @@ from sqlalchemy.orm import sessionmaker, relationship, column_property
 from datetime import datetime
 from sqlalchemy.ext.declarative import declarative_base
 import enum
-from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
+import time
 
 engine = db.create_engine('mysql+mysqldb://root@server/fs?charset=utf8mb4', echo=False, encoding="utf8")
-connection = engine.connect()
+
 Base = declarative_base()
 Session = sessionmaker(bind=engine)
 
@@ -72,5 +72,14 @@ class Trunk(Base):
 
     recipe_id = Column(Integer, ForeignKey('recipe.recipe_id'))
 
+def initDB(counter):
+    try:
+        Base.metadata.create_all(engine)
+    except Exception as e:
+        print(e)
+        counter += 1
+        if counter < 13:
+            time.sleep(5)
+            initDB(counter)
 
-Base.metadata.create_all(engine)
+initDB(0)

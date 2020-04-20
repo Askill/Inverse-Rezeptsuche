@@ -50,14 +50,14 @@
     
 }
 .recipe-name{
-
+    margin: 1rem 0;
 }
 .recipe-instructions{
     display: grid;
     width:70%;
 }
 .recipe-score{
-    
+    margin: 1rem 1rem;
 }
 .recipe-container{
     padding:0;
