@@ -1,5 +1,6 @@
 from flask_restful import Resource, reqparse
 import flask
+from flask import g
 import requests
 import application.config as config
 import json
@@ -12,28 +13,28 @@ import time
 class RecipeList(Resource):
     def get(self):
         """  """
-        try:
-            parser = reqparse.RequestParser()
-            parser.add_argument('ingred', type=str,  action='append')
-            args = parser.parse_args()
-            ingreds = args["ingred"]
+        g.session = Session()
 
-            ingreds = [migrate.stemWord(ingred)[0] for ingred in ingreds + search.defaultArr] 
+        parser = reqparse.RequestParser()
+        parser.add_argument('ingred', type=str,  action='append')
+        args = parser.parse_args()
+        ingreds = args["ingred"]
 
-            start = time.time()
-            indx = search.fastes(ingreds)
-            end = time.time()
-            print("get recipes",end - start, "\n")  
+        ingreds = [migrate.stemWord(ingred)[0] for ingred in ingreds + search.defaultArr] 
 
-            start = time.time()
-            recs = search.getRecDict(indx, ingreds)
-            end = time.time()
-            print("calc overlay",end - start, "\n")  
-        
-            return flask.make_response(flask.jsonify({'data': recs}), 200)
+        start = time.time()
+        indx = search.fastes(ingreds)
+        end = time.time()
+        print("get recipes",end - start, "\n")  
 
-        except Exception as e:
-            print("error: -", e)
-            return flask.make_response(flask.jsonify({'error': str(e)}), 400)
+        start = time.time()
+        recs = search.getRecDict(indx, ingreds)
+        end = time.time()
+        print("calc overlay",end - start, "\n")  
+
+        g.session.commit()
+        g.session.close()
+        return flask.make_response(flask.jsonify({'data': recs}), 200)
+
 
 

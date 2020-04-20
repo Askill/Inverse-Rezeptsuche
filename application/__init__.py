@@ -5,6 +5,7 @@ import os
 from json import dumps
 import application.endpoints as endpoints
 import application.config as config
+from application.db import Session 
 
 app = Flask(__name__)
 api = Api(app, version='1', contact={"name":""}, license={"name":"Online Dienst Dokumentation"}, api_spec_url='/api/swagger')

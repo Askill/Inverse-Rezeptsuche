@@ -1,30 +1,17 @@
 
 from application.db import Session, Recipe, Ingredient, Trunk
+from flask import g
 import nltk as nltk
 from nltk.corpus import stopwords
 import time
 import heapq
 from collections import Counter 
 
-dbSession = Session()
 
-
-def faster(inputArr):
-    indx = {}
- 
-    for inpu in inputArr:
-        ids = [] 
-        for x in dbSession.query(Trunk.recipe_id).filter(Trunk.name.contains(inpu)).all():
-            if str(x[0]) not in indx:
-                indx[str(x[0])] = 0
-
-            indx[str(x[0])] += 1
-        
-    return(indx)
 
 def fastes(inputArr):
     indx = {}
-
+    dbSession = g.session
     for inpu in inputArr:
         ids = [] 
         for recipe_id in dbSession.query(Trunk.recipe_id).filter(Trunk.name == inpu).all():           
@@ -47,7 +34,8 @@ def stemInput(inputArr):
 #
 
 def getRecDict(indx, inputArr):
-    #inputArr = stem(inputArr)
+    dbSession = g.session
+    
     outDict = {}
     k = Counter(indx) 
     # Finding 1000 highest values 

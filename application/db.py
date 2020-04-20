@@ -7,7 +7,7 @@ import enum
 from flask import Flask
 import time
 
-engine = db.create_engine('mysql+mysqldb://root@server/fs?charset=utf8mb4', echo=False, encoding="utf8")
+engine = db.create_engine('mysql+mysqldb://root@server/fs?charset=utf8mb4', echo=False, encoding="utf8", pool_size=1000, max_overflow=0)
 
 Base = declarative_base()
 Session = sessionmaker(bind=engine)
@@ -21,7 +21,7 @@ class Recipe(Base):
     name = Column('name', Text)
     instructions = Column('instructions', Text)
     url = Column('url', Text)
-    img = Column('img', LargeBinary)
+    img = Column('img', LargeBinary(length=(2**32)-1))
     ingredient = relationship("Ingredient", backref="recipe")
     trunk = relationship("Trunk", backref="recipe")
 
