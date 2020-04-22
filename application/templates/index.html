@@ -6,9 +6,13 @@
     <!--Bootstrap-->
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link href="https://bootswatch.com/4/superhero/bootstrap.css" rel="stylesheet" id="bootstrap-css3">
+    <link href="https://bootswatch.com/4/flatly/bootstrap.css" rel="stylesheet" id="bootstrap-css3">
+
     <link rel="stylesheet" title="default" href="/static/main.css">
     <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+
+
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
@@ -25,19 +29,16 @@
     <script src="/static/render.js"></script>
     <script src="/static/main.js"></script>
 
-    <script src="/static/vanta/three.r95.min.js"></script>
-    <script src="/static/vanta/vanta.net.min.js"></script>
-
 </head>
 
 <body>
 
 
-    <div style="position: fixed; left: 50%;">
-        <div class="container bg-dark disable-scrollbars" id="main">
+    <div style="text-align:center;">
+        <div class="container bg-dark" id="main">
             <nav class="navbar navbar-expand-lg navbar-dark bg-primary" id="nav-container">
                   <form class="form-inline my-2 my-lg-0" id="search-form" onsubmit="loadData();return false" action="#">
-                    <input class="form-control" type="text" id="search-field" placeholder="Mehl, Eier, Zucker" style="width:88%">
+                    <input class="form-control" type="text" id="search-field" placeholder="Mehl, Eier, Zucker">
                     <button class="btn btn-secondary my-2 my-sm-0" id="nav-button" type="button" onclick="loadData()">🔍</button>
                   </form>
             </nav>
@@ -50,22 +51,5 @@
 
     
 </body>
-<script>
-    VANTA.BIRDS({
-      el: "body",
-      mouseControls: true,
-    touchControls: true,
-    minHeight: 200.00,
-    minWidth: 200.00,
-    scale: 1.00,
-    scaleMobile: 1.00,
-    color1: 0x91a75e,
-    color2: 0xdc1818,
-    colorMode: "lerpGradient",
-    speedLimit: 8.00,
-    separation: 8.00,
-    alignment: 86.00,
-    cohesion: 19.00
-    })
-    </script>
+
 </html>
