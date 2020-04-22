@@ -6,16 +6,21 @@ from nltk.corpus import stopwords
 from application.db import Session, Recipe, Ingredient, Trunk
 
 def stemWord(word):
-    arr = []
-    stopset = set(stopwords.words('german'))
-    stopset |= set("(),")
-    snowball = nltk.SnowballStemmer(language='german')
-    for token in nltk.word_tokenize(word): 
-        if token in stopset or len(token) < 4:
-            continue
-        stemmed = snowball.stem(token)
-        arr.append(stemmed)
-    return arr
+    try:
+        arr = []
+        stopset = set(stopwords.words('german'))
+        stopset |= set("(),")
+        snowball = nltk.SnowballStemmer(language='german')
+        for token in nltk.word_tokenize(word): 
+            if token in stopset or len(token) < 4:
+                continue
+            stemmed = snowball.stem(token)
+            arr.append(stemmed)
+        if len(arr) == 0:
+            arr.append("")
+        return arr
+    except:
+        return [""]
 
 def migrate(path):
     recs = ""

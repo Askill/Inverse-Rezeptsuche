@@ -42,7 +42,7 @@ def getImages():
             if defaultImg == recipe.img:
                 url = recipe.url
                 string1 = '//*[@id="recipe-image-carousel"]/div/div[1]/div[10]/div/a/amp-img'
-
+//*[@id="recipe-image-carousel"]/div/div[1]/div/div/a/amp-img
                 driver.get(url)
                 element = WebDriverWait(driver, 30).until(
                             ec.presence_of_element_located((
@@ -63,11 +63,11 @@ def getImages():
                 counter +=1
                 print(counter/maxC)
                 sleep(5)
-        except:
+        except Exception as e:
             errorUrls.append(recipe.url)
             print(recipe.url)
-            print("error")
-
+            print(e)
+    print(errorUrls)
         
 
 getImages()

@@ -17,7 +17,11 @@ function loadData() {
             renderRecipeList(data)
                 
         },
-        loadData()
+        function (error, data) {
+            console.log(error)
+            rl.innerHTML = "<p>Es gab einen Fehler, bitte suchen Sie erneut.</p>"
+                
+        }
     );
 }
 
