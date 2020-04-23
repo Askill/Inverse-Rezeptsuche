@@ -38,11 +38,11 @@ def getRecDict(indx, inputArr):
     
     outDict = {}
     k = Counter(indx) 
-    # Finding 1000 highest values 
+    # Finding 1000 highest values TODO: this is not correct
     indx = k.most_common(1000)  
     indx = dict(indx)
     for key, value in indx.items():
-        ingred = dbSession.query(Trunk.name).filter(Trunk.recipe_id==int(key)).all()
+        ingred = [x[0] for x in dbSession.query(Trunk.name).filter(Trunk.recipe_id==int(key)).all()]
         outDict[calcOverlay(inputArr, ingred)] = int(key)
         
     outDict2 = {}
@@ -72,10 +72,9 @@ def stem(l1):
 
 def calcOverlay(l1, l2):
     counter = 0
-
-    for x in l2:
-        for l in l1:
-            if l not in defaultArr and l == x[0]:
+    for l in l1:
+        if l not in defaultArr:
+            if l in l2:
                 #print(l)
                 counter +=1
     counter = counter / len(l2)                 

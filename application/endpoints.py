@@ -14,7 +14,7 @@ class RecipeList(Resource):
     def get(self):
         """  """
         g.session = Session()
-
+        g.session = Session()
         parser = reqparse.RequestParser()
         parser.add_argument('ingred', type=str,  action='append')
         args = parser.parse_args()
