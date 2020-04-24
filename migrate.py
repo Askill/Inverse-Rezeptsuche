@@ -3,8 +3,8 @@ import cv2
 import base64
 import nltk as nltk
 from nltk.corpus import stopwords
-import db as db1
-import db2 as db2
+#import db as db1
+#import db2 as db2
 
 def stemWord(word):
     try:
@@ -25,7 +25,7 @@ def stemWord(word):
 
 #migrate('./data/recs.json')
 
-def migrateDb1ToDb2():
+def migrateRecsDb1ToDb2():
 
     session1 = db1.Session()
     session2 = db2.Session()
@@ -57,4 +57,47 @@ def migrateDb1ToDb2():
         count+=1
         print(count/length)
 
-migrateDb1ToDb2()
+def TrunkDb2():
+    session2 = db2.Session()
+ 
+    count = 0
+    length = session2.query(db2.Ingredient).count()
+    for i2 in session2.query(db2.Ingredient).all():
+        try:
+            for trunk1 in stem(i2.name):
+
+                ri2 = db2.IngredTrunk()
+                trunk = session2.query(db2.Trunk).filter(db2.Trunk.name == trunk1).first()
+                if trunk is None:
+                    trunk = db2.Trunk(name=trunk1)
+                
+                if session2.query(db2.IngredTrunk).filter(db2.IngredTrunk.ingredient_name == i2.name, db2.IngredTrunk.trunk_name == trunk1).first() is None:
+                    ri2.trunk = trunk
+                    i2.trunks.append(ri2)
+            
+                session2.commit()
+            
+        except Exception as e:
+            print(e)
+            session2 = db2.Session()
+
+        count+=1
+        print(count/length)
+
+
+def stem(l1):
+    '''Tokenize and stem word, result is 1d list'''
+    snowball = nltk.SnowballStemmer(language='german')
+    stopset = set(stopwords.words('german'))
+    stopset |= set("(),")
+    l2 = []
+
+    for token in nltk.word_tokenize(l1): 
+        token = snowball.stem(token)
+        if token in stopset or not token.isalpha() or len(token) < 2:
+            continue
+        l2.append(token)
+
+    return l2
+#migrateDb1ToDb2()
+#TrunkDb2()

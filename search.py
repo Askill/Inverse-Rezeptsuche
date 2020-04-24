@@ -1,5 +1,6 @@
 
 from application.db import Session, Recipe, Ingredient, Trunk
+import application.db2 as db
 from flask import g
 import nltk as nltk
 from nltk.corpus import stopwords
@@ -21,6 +22,20 @@ def fastes(inputArr):
             indx[str(recipe_id[0])] += 1
     return(indx) 
     
+def search2(inputArr):
+    indx = {}
+    dbSession = db.Session()
+    for inpu in inputArr:
+        ids = [] 
+        for recipe in dbSession.query(db.Trunk.ingredients.recipe).filter(db.Trunk.name == inpu).all(): 
+    
+            if str(recipe.recipe_id) not in indx:
+                indx[str(recipe.recipe_id)] = 0
+
+            indx[str(recipe.recipe_id)] += 1
+    return(indx) 
+
+
 def stemInput(inputArr):
     inputArr2 = []
 

@@ -20,10 +20,10 @@ class RecipeList(Resource):
         args = parser.parse_args()
         ingreds = args["ingred"]
 
-        ingreds = [migrate.stemWord(ingred)[0] for ingred in ingreds + search.defaultArr] 
+        ingreds = [migrate.stem(ingred)[0] for ingred in ingreds + search.defaultArr] 
 
         start = time.time()
-        indx = search.fastes(ingreds)
+        indx = search.search2(ingreds)
         end = time.time()
         print("get recipes",end - start, "\n")  
 
