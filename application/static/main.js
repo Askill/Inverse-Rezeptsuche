@@ -58,7 +58,7 @@ function renderRecipeList(data){
             )
             
             recString = `
-                <a href="${data1[2]}"> 
+                <a href="${data1[2]}" target="_blank"> 
                     <div class="card text-white bg-primary mb-3" style="max-width: 100%">
                         <div class="card-body recipe-container">
                             <div class="row">

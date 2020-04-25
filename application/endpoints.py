@@ -20,15 +20,15 @@ class RecipeList(Resource):
         args = parser.parse_args()
         ingreds = args["ingred"]
 
-        ingreds = [migrate.stem(ingred)[0] for ingred in ingreds + search.defaultArr] 
+        ingreds = [migrate.stem(ingred)[0] for ingred in ingreds] 
 
         start = time.time()
         indx = search.search2(ingreds)
         end = time.time()
         print("get recipes",end - start, "\n")  
 
-        start = time.time()
-        recs = search.getRecDict(indx, ingreds)
+        #start = time.time()
+        recs = search.getRecDict2(indx, ingreds)
         end = time.time()
         print("calc overlay",end - start, "\n")  
 
