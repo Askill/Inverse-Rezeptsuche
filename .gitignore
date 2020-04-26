@@ -2,3 +2,5 @@
 data/recs.json
 
 backup.sql
+
+app/data/

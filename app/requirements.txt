@@ -1,0 +1,8 @@
+flask
+flask_restful
+sqlalchemy
+requests
+flask-restful-swagger-3
+mysqlclient
+nltk
+opencv-python
