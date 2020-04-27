@@ -63,7 +63,7 @@ def getRecDict2(indx, inputArr):
         key2 = outDict[key]
         rec = dbSession.query(db.Recipe).filter(db.Recipe.recipe_id == key2).first()
         outDict2[key] = (key2, rec.name, rec.url,  [r[0] + ": " + r[1] for r in dbSession.query(db.Ingredient.name,
-                                                                                                db.RecIngred.ingredient_amount).join(db.RecIngred).join(db.Recipe).filter(db.Recipe.recipe_id == key2).all()], rec.img.decode('utf-8'))
+                                                                                                db.RecIngred.ingredient_amount).join(db.RecIngred).join(db.Recipe).filter(db.Recipe.recipe_id == key2).all()])
     return outDict2
 
 def stem(l1):

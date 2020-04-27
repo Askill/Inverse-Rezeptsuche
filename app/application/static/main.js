@@ -63,7 +63,7 @@ function renderRecipeList(data){
                         <div class="card-body recipe-container">
                             <div class="row">
                                 <div class="col-lg-5 col-sm-5 col">
-                                    <img class="recipe-img" src="data:image/png;base64,${data1[4]}">
+                                    <img class="recipe-img" src="/api/v1/images/${data1[0]}">
                                 </div>
                                 <div class="col-lg col-sm col">
                                     <div class="row">
