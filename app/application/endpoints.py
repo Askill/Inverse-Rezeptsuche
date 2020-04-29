@@ -44,6 +44,7 @@ class Images(Resource):
         session = Session()
         image = session.query(Recipe.img).filter(Recipe.recipe_id == id).first()[0]
         image = base64.b64decode(image)
+        session.close()
         return flask.Response(image,  mimetype='image/png')
 
 
