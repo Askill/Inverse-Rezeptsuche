@@ -1,28 +1,47 @@
 
 var rl
 
-function loadData() {
-    rl = document.getElementById("recipe-list")
-    rl.innerHTML = '<div class="loader"></div>'
-    document.getElementById("main").className += " data-loaded"
-    
-    
+
+function checkforURLParam(){
+    try {
+        let url = window.location.href
+        params = url.split("?")[1]
+        if (params !== undefined){
+            params = "?" + params
+            loadRecipes(params)
+        }
+        
+      } catch (error) {
+        console.log(error)
+      }
+}
+
+
+function loadData() {    
     // make string of get params for request
     getParams = makeGetParamString() 
 
+    window.location = window.location.href.split("?")[0] + getParams
+}
+
+function loadRecipes(getParams){
+    rl = document.getElementById("recipe-list")
+    rl.innerHTML = '<div class="loader"></div>'
+    document.getElementById("main").className += " data-loaded"
+
     getJSON("/api/v1/recipe/" + getParams,
-        function (error, data) {
-            data = data["data"] // remove wrapper
-            console.log(data)
-            renderRecipeList(data)
-                
-        },
-        function (error, data) {
-            console.log(error)
-            rl.innerHTML = "<p>Es gab einen Fehler, bitte suchen Sie erneut.</p>"
-                
-        }
-    );
+    function (error, data) {
+        data = data["data"] // remove wrapper
+        console.log(data)
+        renderRecipeList(data)
+            
+    },
+    function (error, data) {
+        console.log(error)
+        rl.innerHTML = "<p>Es gab einen Fehler, bitte suchen Sie erneut.</p>"
+            
+    }
+);
 }
 
 function makeGetParamString(){
