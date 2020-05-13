@@ -8,6 +8,7 @@ import heapq
 from collections import Counter
 import background.migrate
 
+
 def search2(inputArr):
     indx = {}
     dbSession = db.Session()
@@ -32,6 +33,7 @@ def stemInput(inputArr):
     return inputArr2
 #
 
+
 def getRecDict2(indx, inputArr):
     dbSession = db.Session()
 
@@ -42,29 +44,40 @@ def getRecDict2(indx, inputArr):
     indx = k.most_common(1000)
     indx = dict(indx)
 
-    ingred = [x for x in dbSession.query(db.Recipe.recipe_id, db.IngredTrunk.trunk_name, db.IngredTrunk.ingredient_name ).filter(db.Recipe.recipe_id.in_(indx.keys())).join(db.RecIngred).join(db.Ingredient).join(db.IngredTrunk).all()]
+    ingred = [x for x in dbSession.query(db.Recipe.recipe_id, db.IngredTrunk.trunk_name, db.IngredTrunk.ingredient_name).filter(
+        db.Recipe.recipe_id.in_(indx.keys())).join(db.RecIngred).join(db.Ingredient).join(db.IngredTrunk).all()]
     ingredDict = {}
-    for k,v, i in ingred:
+    # RezeptID, stemmed Ingred, full ingred Name
+    # Dict spiegelt DB wieder, key, full ingred, stemmed
+    for k, v, i in ingred:
         if k not in ingredDict:
             ingredDict[k] = {}
         if i not in ingredDict[k]:
             ingredDict[k][i] = []
-
         ingredDict[k][i].append(v)
     inputArr += defaultArr
+
+    # checks overlay per recipeID 
+    # itareate over ingreds and checks per stemmed ingred
+    # returns accurate percentage of overlay
+    # since overlay scare is the key of dict it is reduced by insignificant number to preserve all values  
     for key, value in ingredDict.items():
-        overlay = calcOverlay2(inputArr, value)
+        overlay, missing = calcOverlay2(inputArr, value)
         while overlay in outDict.keys():
             overlay -= 0.0001
-        outDict[overlay] = int(key)
-
+        outDict[overlay] = (int(key), missing)
+    
+    # return Dict with 20 highest value keys
     outDict2 = {}
     for key in heapq.nlargest(20, outDict.keys()):
-        key2 = outDict[key]
-        rec = dbSession.query(db.Recipe).filter(db.Recipe.recipe_id == key2).first()
+        key2 = outDict[key][0]
+        missing = outDict[key][1]
+        rec = dbSession.query(db.Recipe).filter(
+            db.Recipe.recipe_id == key2).first()
         outDict2[key] = (key2, rec.name, rec.url,  [r[0] + ": " + r[1] for r in dbSession.query(db.Ingredient.name,
-                                                                                                db.RecIngred.ingredient_amount).join(db.RecIngred).join(db.Recipe).filter(db.Recipe.recipe_id == key2).all()])
+                                                                                                db.RecIngred.ingredient_amount).join(db.RecIngred).join(db.Recipe).filter(db.Recipe.recipe_id == key2).all()], missing)
     return outDict2
+
 
 def stem(l1):
     snowball = nltk.SnowballStemmer(language='german')
@@ -73,17 +86,24 @@ def stem(l1):
     l1 = [snowball.stem(l) for l in l1]
     return l1
 
+
 def calcOverlay2(l1, l2):
+    '''Calculates overlay and returns missing ingredients, [score (float), missing([])]'''
     counter = 0
-    for ll in l2.values():
+    notIn = []
+    for key, ll in l2.items():
+        missing = True
         for l in ll:
             if l in l1:
                 counter += 1
+                missing = False
                 break
+        if missing:
+            notIn.append(key)
 
     counter = counter / len(l2)
-    return counter
+    return counter, notIn
+
 
 # it is assumed that everyone has this
 defaultArr = ["Wasser", "salz", "pfeffer"]
-

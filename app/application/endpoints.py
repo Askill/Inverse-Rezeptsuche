@@ -27,12 +27,10 @@ class RecipeList(Resource):
         end = time.time()
         print("get recipes",end - start, "\n")  
 
-        #start = time.time()
         recs = search.getRecDict2(indx, ingreds)
         end = time.time()
         print("calc overlay",end - start, "\n")  
 
-        g.session.commit()
         g.session.close()
         return flask.make_response(flask.jsonify({'data': recs}), 200)
 

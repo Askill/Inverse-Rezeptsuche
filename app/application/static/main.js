@@ -51,29 +51,45 @@ function renderRecipeList(data){
         function (key) {
             data1 = data[key]
             ingredString = ""
+            missingString = ""
             data1[3].forEach(
                 function(ingred){
                     ingredString += `${ingred}<br>`
                 }
             )
-            
+            data1[4].forEach(
+                function(ingred){
+                    missingString += `${ingred}<br>`
+                }
+            )            
             recString = `
-                <a href="${data1[2]}" target="_blank"> 
                     <div class="card text-white bg-primary mb-3" style="max-width: 100%">
                         <div class="card-body recipe-container">
                             <div class="row">
                                 <div class="col-lg-5 col-sm-5 col">
-                                    <img class="recipe-img" src="/api/v1/images/${data1[0]}">
+                                    <a href="${data1[2]}" target="_blank"> 
+                                        <img class="recipe-img" src="/api/v1/images/${data1[0]}">
+                                    </a>
                                 </div>
                                 <div class="col-lg col-sm col">
                                     <div class="row">
                                         <div class="col">
-                                            <span><h4 class="recipe-name">${data1[1]}</h4></span>
+                                            <a href="${data1[2]}" target="_blank"> 
+                                                <span><h4 class="recipe-name">${data1[1]}</h4></span>
+                                            </a>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col">
                                         <div class="recipe-ingredients">${ingredString}</div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                        <br>Fehlt:<br>
+                                        <div class="recipe-ingredients missing">
+                                            ${missingString}
+                                        </div>
                                         </div>
                                     </div>
                                 </div>
@@ -84,7 +100,7 @@ function renderRecipeList(data){
                             </div>
                         </div>
                     </div>
-                </a>
+                
             
             `
             rl.innerHTML += recString
