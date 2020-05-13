@@ -7,6 +7,10 @@ function checkforURLParam(){
         let url = window.location.href
         params = url.split("?")[1]
         if (params !== undefined){
+            // url param to string for search bar
+            paramString = params.split("&").join("").split("ingred=").join(", ").replace(", ", "")
+            
+            document.getElementById("search-field").value = paramString
             params = "?" + params
             loadRecipes(params)
         }
