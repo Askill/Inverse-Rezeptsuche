@@ -35,10 +35,13 @@ function loadRecipes(getParams){
 
     getJSON("/api/v1/recipe/" + getParams,
     function (error, data) {
-        data = data["data"] // remove wrapper
         console.log(data)
+        ignored = data["data"]["ignored"]
+        data = data["data"]["ingred"] // remove wrapper
+        
+        
         renderRecipeList(data)
-            
+        renderIgnored(ignored)
     },
     function (error, data) {
         console.log(error)
@@ -46,6 +49,25 @@ function loadRecipes(getParams){
             
     }
 );
+}
+function renderIgnored(ignored){
+    document.getElementById("search-form").innerHTML += "<br>"
+    ignored.forEach(
+        function (item, index) {
+            document.getElementById("search-form").innerHTML += `<span class="badge badge-danger badge-pill">${item}</span>`
+        }
+    )
+    let url = window.location.href
+    params = url.split("?")[1]
+    if (params !== undefined){
+        // url param to string for search bar
+        paramString = params.split("&").join("").split("ingred=").join(", ").replace(", ", "")
+        
+        document.getElementById("search-field").value = paramString
+        params = "?" + params
+        
+    }
+    
 }
 
 function makeGetParamString(){
@@ -77,6 +99,9 @@ function renderRecipeList(data){
             missingString = ""
             data1[3].forEach(
                 function(ingred){
+                    if (ingred.charAt(ingred.length-2) === ":"){
+                        ingred = ingred.substr(0, ingred.length-2)
+                    }
                     ingredString += `${ingred}<br>`
                 }
             )
@@ -84,7 +109,14 @@ function renderRecipeList(data){
                 function(ingred){
                     missingString += `${ingred}<br>`
                 }
-            )            
+            )
+            if(data1[4].length === 0){
+                missing = ""  
+            }    
+            else{
+                missing = "<br>Fehlt:<br>"  
+            }
+                  
             recString = `
                     <div class="card text-white bg-primary mb-3" style="max-width: 100%">
                         <div class="card-body recipe-container">
@@ -109,7 +141,7 @@ function renderRecipeList(data){
                                     </div>
                                     <div class="row">
                                         <div class="col">
-                                        <br>Fehlt:<br>
+                                        ${missing}
                                         <div class="recipe-ingredients missing">
                                             ${missingString}
                                         </div>

@@ -7,7 +7,7 @@ import time
 import heapq
 from collections import Counter
 import background.migrate
-
+from sqlalchemy import exists
 
 def search2(inputArr):
     indx = {}
@@ -55,6 +55,12 @@ def getRecDict2(indx, inputArr):
         if i not in ingredDict[k]:
             ingredDict[k][i] = []
         ingredDict[k][i].append(v)
+
+    ignored = []
+    for x in inputArr:
+        if not dbSession.query(exists().where(db.Trunk.name == x)).scalar():
+            ignored.append(x)
+
     inputArr += defaultArr
 
     # checks overlay per recipeID 
@@ -67,6 +73,8 @@ def getRecDict2(indx, inputArr):
             overlay -= 0.0001
         outDict[overlay] = (int(key), missing)
     
+
+
     # return Dict with 20 highest value keys
     outDict2 = {}
     for key in heapq.nlargest(20, outDict.keys()):
@@ -76,7 +84,10 @@ def getRecDict2(indx, inputArr):
             db.Recipe.recipe_id == key2).first()
         outDict2[key] = (key2, rec.name, rec.url,  [r[0] + ": " + r[1] for r in dbSession.query(db.Ingredient.name,
                                                                                                 db.RecIngred.ingredient_amount).join(db.RecIngred).join(db.Recipe).filter(db.Recipe.recipe_id == key2).all()], missing)
-    return outDict2
+    outDict = {}
+    outDict["ignored"] = ignored
+    outDict["ingred"] = outDict2
+    return outDict
 
 
 def stem(l1):
