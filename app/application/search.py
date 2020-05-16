@@ -10,6 +10,7 @@ import background.migrate
 from sqlalchemy import exists
 
 def search2(inputArr):
+    ''' returns inputs with array of recipeID which use them  '''
     indx = {}
     dbSession = db.Session()
     for inpu in inputArr:
@@ -22,6 +23,7 @@ def search2(inputArr):
 
 
 def stemInput(inputArr):
+    ''' returns array of stemmed input '''
     inputArr2 = []
 
     snowball = nltk.SnowballStemmer(language='german')
@@ -31,9 +33,8 @@ def stemInput(inputArr):
             continue
         inputArr2.append(snowball.stem(word))
     return inputArr2
-#
 
-
+# TODO: split into more functions
 def getRecDict2(indx, inputArr):
     dbSession = db.Session()
 
@@ -47,8 +48,10 @@ def getRecDict2(indx, inputArr):
     ingred = [x for x in dbSession.query(db.Recipe.recipe_id, db.IngredTrunk.trunk_name, db.IngredTrunk.ingredient_name).filter(
         db.Recipe.recipe_id.in_(indx.keys())).join(db.RecIngred).join(db.Ingredient).join(db.IngredTrunk).all()]
     ingredDict = {}
+
     # RezeptID, stemmed Ingred, full ingred Name
     # Dict spiegelt DB wieder, key, full ingred, stemmed
+    # this structure makes calcOverlay() more efficient
     for k, v, i in ingred:
         if k not in ingredDict:
             ingredDict[k] = {}
@@ -56,15 +59,16 @@ def getRecDict2(indx, inputArr):
             ingredDict[k][i] = []
         ingredDict[k][i].append(v)
 
+    # check if any input is not in db.Trunk
     ignored = []
     for x in inputArr:
         if not dbSession.query(exists().where(db.Trunk.name == x)).scalar():
-            ignored.append(x)
+            ignored.append(inputArr.index(x))
 
     inputArr += defaultArr
 
     # checks overlay per recipeID 
-    # itareate over ingreds and checks per stemmed ingred
+    # iterate over ingreds and checks per stemmed ingred
     # returns accurate percentage of overlay
     # since overlay scare is the key of dict it is reduced by insignificant number to preserve all values  
     for key, value in ingredDict.items():
@@ -73,9 +77,8 @@ def getRecDict2(indx, inputArr):
             overlay -= 0.0001
         outDict[overlay] = (int(key), missing)
     
-
-
     # return Dict with 20 highest value keys
+    # creates dict which is returned
     outDict2 = {}
     for key in heapq.nlargest(20, outDict.keys()):
         key2 = outDict[key][0]

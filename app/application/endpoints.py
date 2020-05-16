@@ -14,22 +14,26 @@ class RecipeList(Resource):
     def get(self):
         """  """
         g.session = Session()
-        g.session = Session()
+
+        # get Input
         parser = reqparse.RequestParser()
         parser.add_argument('ingred', type=str,  action='append')
         args = parser.parse_args()
         ingreds = args["ingred"]
 
-        ingreds = [migrate.stem(ingred)[0] for ingred in ingreds] 
+        # stem to find stems in db
+        stemmed = [migrate.stem(ingred)[0] for ingred in ingreds] 
 
         start = time.time()
-        indx = search.search2(ingreds)
-        end = time.time()
-        print("get recipes",end - start, "\n")  
+        # returns ids of found recipes
+        indx = search.search2(stemmed)
+        print("get recipes",time.time() - start, "\n")  
 
-        recs = search.getRecDict2(indx, ingreds)
-        end = time.time()
-        print("calc overlay",end - start, "\n")  
+        # returns dict with recipes, keys are the % of overlaps with recipes as values
+        recs = search.getRecDict2(indx, stemmed)
+        # ignored saved only the indices, has to be matched to the input before it's returned
+        recs["ignored"] = [ingreds[x] for x in recs["ignored"]]
+        print("calc overlay", time.time() - start, "\n")  
 
         g.session.close()
         return flask.make_response(flask.jsonify({'data': recs}), 200)

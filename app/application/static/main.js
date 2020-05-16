@@ -8,9 +8,6 @@ function checkforURLParam(){
         params = url.split("?")[1]
         if (params !== undefined){
             // url param to string for search bar
-            paramString = params.split("&").join("").split("ingred=").join(", ").replace(", ", "")
-            
-            document.getElementById("search-field").value = paramString
             params = "?" + params
             loadRecipes(params)
         }
@@ -24,7 +21,6 @@ function checkforURLParam(){
 function loadData() {    
     // make string of get params for request
     getParams = makeGetParamString() 
-
     window.location = window.location.href.split("?")[0] + getParams
 }
 
@@ -38,7 +34,6 @@ function loadRecipes(getParams){
         console.log(data)
         ignored = data["data"]["ignored"]
         data = data["data"]["ingred"] // remove wrapper
-        
         
         renderRecipeList(data)
         renderIgnored(ignored)
