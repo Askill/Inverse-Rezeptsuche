@@ -7,7 +7,7 @@ import enum
 from flask import Flask
 import time
 
-engine = db.create_engine('mysql+mysqldb://root@server/fs2?charset=utf8mb4', echo=False, encoding="utf8", pool_size=1000, max_overflow=0)
+engine = db.create_engine('mysql+mysqldb://root@server/fs2?charset=utf8mb4', echo=False, encoding="utf8", pool_size=1000, max_overflow=0, pool_pre_ping=True)
 
 Base = declarative_base()
 Session = sessionmaker(bind=engine, autoflush=False)

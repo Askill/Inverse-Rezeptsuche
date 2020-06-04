@@ -120,4 +120,4 @@ def calcOverlay2(l1, l2):
 
 
 # it is assumed that everyone has this
-defaultArr = ["Wasser", "salz", "pfeffer"]
+defaultArr = ["wasser", "salz", "pfeffer"]

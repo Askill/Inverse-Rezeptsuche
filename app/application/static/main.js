@@ -41,7 +41,7 @@ function loadRecipes(getParams){
     function (error, data) {
         console.log(error)
         rl.innerHTML = "<p>Es gab einen Fehler, bitte suchen Sie erneut.</p>"
-            
+        insertValueIntoSearchbar()    
     }
 );
 }
@@ -52,6 +52,11 @@ function renderIgnored(ignored){
             document.getElementById("search-form").innerHTML += `<span class="badge badge-danger badge-pill">${item}</span>`
         }
     )
+
+    insertValueIntoSearchbar()
+}
+
+function insertValueIntoSearchbar(){
     let url = window.location.href
     params = url.split("?")[1]
     if (params !== undefined){
@@ -62,7 +67,6 @@ function renderIgnored(ignored){
         params = "?" + params
         
     }
-    
 }
 
 function makeGetParamString(){
@@ -118,7 +122,7 @@ function renderRecipeList(data){
                             <div class="row">
                                 <div class="col-lg-5 col-sm-5 col">
                                     <a href="${data1[2]}" target="_blank"> 
-                                        <img class="recipe-img" src="/api/v1/images/${data1[0]}">
+                                        <img class="recipe-img" src="/api/v1/recipe/${data1[0]}/image">
                                     </a>
                                 </div>
                                 <div class="col-lg col-sm col">
