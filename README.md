@@ -1,3 +1,3 @@
 Forschungsseminar
 
-live demo: fs.jpmatz.de
+live demo: https://fs.jpmatz.de
