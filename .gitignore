@@ -1,8 +1,2 @@
-
-data/recs.json
-
-backup.sql
-
-app/data/
-
-app/application/__pycache__/
+__pycache__/
+*.pyc
